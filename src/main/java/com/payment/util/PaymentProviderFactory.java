@@ -1,8 +1,8 @@
-package com.stripe.util;
+package com.payment.util;
 
-import com.stripe.service.PaymentProvider;
-import com.stripe.service.serviceimpl.RazorPayPaymentProvider;
-import com.stripe.service.serviceimpl.StripePaymentProvider;
+import com.payment.service.PaymentProvider;
+import com.payment.service.serviceimpl.RazorPayPaymentProvider;
+import com.payment.service.serviceimpl.StripePaymentProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 

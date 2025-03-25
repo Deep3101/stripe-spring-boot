@@ -1,4 +1,4 @@
-package com.stripe.dto;
+package com.payment.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

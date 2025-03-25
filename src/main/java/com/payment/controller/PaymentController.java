@@ -1,9 +1,9 @@
-package com.stripe.controller;
+package com.payment.controller;
 
-import com.stripe.dto.PaymentResponse;
-import com.stripe.dto.ProductRequest;
-import com.stripe.util.PaymentProviderFactory;
-import com.stripe.service.PaymentProvider;
+import com.payment.dto.PaymentResponse;
+import com.payment.dto.ProductRequest;
+import com.payment.util.PaymentProviderFactory;
+import com.payment.service.PaymentProvider;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

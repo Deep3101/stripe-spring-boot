@@ -1,7 +1,7 @@
-package com.stripe.service;
+package com.payment.service;
 
-import com.stripe.dto.PaymentResponse;
-import com.stripe.dto.ProductRequest;
+import com.payment.dto.PaymentResponse;
+import com.payment.dto.ProductRequest;
 
 public interface PaymentProvider {
     PaymentResponse createPaymentSession(ProductRequest productRequest);

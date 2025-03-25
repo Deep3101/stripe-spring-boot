@@ -1,12 +1,12 @@
-package com.stripe.service.serviceimpl;
+package com.payment.service.serviceimpl;
 
-import com.stripe.dto.PaymentResponse;
-import com.stripe.dto.ProductRequest;
+import com.payment.dto.PaymentResponse;
+import com.payment.dto.ProductRequest;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
-import com.stripe.service.PaymentProvider;
+import com.payment.service.PaymentProvider;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

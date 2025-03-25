@@ -1,10 +1,10 @@
-package com.stripe.service.serviceimpl;
+package com.payment.service.serviceimpl;
 
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
-import com.stripe.dto.PaymentResponse;
-import com.stripe.dto.ProductRequest;
-import com.stripe.service.PaymentProvider;
+import com.payment.dto.PaymentResponse;
+import com.payment.dto.ProductRequest;
+import com.payment.service.PaymentProvider;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
