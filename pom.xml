@@ -8,7 +8,7 @@
         <version>3.4.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.stripe</groupId>
+    <groupId>com.payment</groupId>
     <artifactId>stripe-payment</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>stripe-payment</name>
@@ -38,7 +38,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
+        <!-- https://mvnrepository.com/artifact/com.razorpay/razorpay-java -->
+        <dependency>
+            <groupId>com.razorpay</groupId>
+            <artifactId>razorpay-java</artifactId>
+            <version>1.4.8</version>
+        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
