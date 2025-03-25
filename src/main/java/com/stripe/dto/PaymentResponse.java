@@ -9,11 +9,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StripeResponse {
+public class PaymentResponse {
     private String status;
     private String message;
     private String sessionUrl;
     private String sessionId;
-
+    private String key;
+    private long amount;
 
 }
