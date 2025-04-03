@@ -4,90 +4,120 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Payment Checkout</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<h2>Complete Your Payment</h2>
-<button id="stripeButton">Pay with Stripe</button>
-<button id="razorpayButton">Pay with Razorpay</button>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+<div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+    <h2 class="text-2xl font-bold text-center mb-4">Complete Your Payment</h2>
+
+    <!-- Payment Form -->
+    <div class="space-y-4">
+        <div>
+            <label for="amount" class="block text-gray-700">Amount (INR):</label>
+            <input type="number" id="amount" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500" placeholder="Enter amount" required />
+        </div>
+
+        <div>
+            <label for="quantity" class="block text-gray-700">Quantity:</label>
+            <input type="number" id="quantity" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500" placeholder="Enter quantity" required />
+        </div>
+
+        <div>
+            <label for="productName" class="block text-gray-700">Product Name:</label>
+            <input type="text" id="productName" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500" placeholder="Enter product name" required />
+        </div>
+
+        <div>
+            <label for="email" class="block text-gray-700">Email:</label>
+            <input type="email" id="email" class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500" placeholder="Enter your email" required />
+        </div>
+
+        <button id="stripeButton" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition duration-300">Pay with Stripe</button>
+        <button id="razorpayButton" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition duration-300">Pay with Razorpay</button>
+    </div>
+</div>
 
 <!-- Razorpay Checkout.js -->
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
-    async function payWithStripe() {
-        const response = await fetch('/payment/checkout/stripe', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                amount: 500,
-                currency: 'INR'
-            })
-        });
+    async function pay(provider) {
+        const amount = document.getElementById('amount').value;
+        const quantity = document.getElementById('quantity').value;
+        const productName = document.getElementById('productName').value;
+        const email = document.getElementById('email').value; // Get email from input field
 
-        const data = await response.json();
-
-        if (data.sessionUrl) {
-            window.location.href = data.sessionUrl; // Redirect for Stripe
-        } else {
-            alert('Failed to create Stripe session');
+        if (!amount || !quantity || !productName || !email) {
+            alert('Please fill in all fields before proceeding.');
+            return;
         }
-    }
 
-    async function payWithRazorpay() {
-        const response = await fetch('/payment/checkout/razorpay', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                amount: 500,
-                currency: 'INR'
-            })
-        });
+        const requestBody = {
+            amount: parseFloat(amount),
+            currency: "INR",
+            quantity: parseInt(quantity),
+            name: productName,
+            email: email // Pass email to backend
+        };
 
-        const data = await response.json();
-
-        console.log(data);
-
-        if (data.key && data.sessionId) {
-            const options = {
-                key: data.key, // Your Razorpay key
-                amount: data.amount, // Amount in paise (500000 = ₹5000)
-                currency: 'INR',
-                order_id: data.sessionId, // Razorpay order ID
-                name: "My Company",
-                description: "Payment for Demo Transaction",
-                handler: function (response) {
-                    alert('Payment successful! Payment ID: ' + response.razorpay_payment_id);
-                    console.log(response);
-                },
-                prefill: {
-                    name: "John Doe",
-                    email: "john@example.com",
-                    contact: "9999999999"
-                },
-                theme: {
-                    color: "#3399cc"
-                }
-            };
-
-            // Open Razorpay Checkout
-            const rzp = new Razorpay(options);
-            rzp.open();
-
-            // Handle payment failure
-            rzp.on('payment.failed', function (response) {
-                alert('Payment failed: ' + response.error.description);
-                console.log(response);
+        try {
+            const response = await fetch(`/payment/checkout/${provider}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
             });
-        } else {
-            alert('Failed to create Razorpay session');
+
+            const data = await response.json();
+
+            if (provider === "stripe" && data.sessionUrl) {
+                window.location.href = data.sessionUrl;
+            } else if (provider === "razorpay" && data.key && data.sessionId) {
+                const options = {
+                    key: data.key,
+                    amount: data.amount,
+                    currency: 'INR',
+                    order_id: data.sessionId,
+                    name: "My Company",
+                    description: "Payment for " + productName,
+                    handler: function (response) {
+                        alert('Payment successful! Payment ID: ' + response.razorpay_payment_id);
+
+                        // Send successful payment details to backend as ProductRequest
+                        fetch('/payment/success', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(requestBody) // Send complete ProductRequest
+                        })
+                            .then(res => res.text())
+                            .then(data => console.log(data))
+                            .catch(err => console.error(err));
+                    },
+                    prefill: {
+                        name: "John Doe",
+                        email: email, // Use user's email
+                        contact: "9999999999"
+                    },
+                    theme: { color: "#3399cc" }
+                };
+
+                const rzp = new Razorpay(options);
+                rzp.open();
+
+                rzp.on('payment.failed', function (response) {
+                    alert('Payment failed: ' + response.error.description);
+                    console.log(response);
+                });
+            } else {
+                alert('Failed to create payment session.');
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Error processing payment.");
         }
     }
 
-    document.getElementById('stripeButton').addEventListener('click', payWithStripe);
-    document.getElementById('razorpayButton').addEventListener('click', payWithRazorpay);
+    document.getElementById('stripeButton').addEventListener('click', () => pay("stripe"));
+    document.getElementById('razorpayButton').addEventListener('click', () => pay("razorpay"));
 </script>
 </body>
 </html>

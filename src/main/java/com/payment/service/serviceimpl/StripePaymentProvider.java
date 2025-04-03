@@ -49,7 +49,7 @@ public class StripePaymentProvider implements PaymentProvider {
             SessionCreateParams.LineItem.PriceData priceData =
                     SessionCreateParams.LineItem.PriceData.builder()
                             .setCurrency(Objects.requireNonNullElse(productRequest.getCurrency(), "USD"))
-                            .setUnitAmount(productRequest.getAmount())
+                            .setUnitAmount(productRequest.getAmount() * 100)
                             .setProductData(productData)
                             .build();
 
@@ -62,8 +62,9 @@ public class StripePaymentProvider implements PaymentProvider {
             SessionCreateParams params =
                     SessionCreateParams.builder()
                             .setMode(SessionCreateParams.Mode.PAYMENT)
-                            .setSuccessUrl("http://localhost:8080/success")
+                            .setSuccessUrl("http://localhost:8080/payment/success/stripe?email=" + productRequest.getEmail())
                             .setCancelUrl("http://localhost:8080/cancel")
+                            .setCustomerEmail(productRequest.getEmail())
                             .addLineItem(lineItem)
                             .build();
 
