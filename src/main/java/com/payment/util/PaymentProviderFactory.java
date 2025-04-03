@@ -19,14 +19,11 @@ public class PaymentProviderFactory {
     }
 
     public PaymentProvider getPaymentProvider(String provider) {
-        switch (provider.toLowerCase()) {
-            case "stripe":
-                return stripePaymentProvider;
-            case "razorpay":
-                return razorPayPaymentProvider;
-            default:
-                throw new IllegalArgumentException("Unsupported payment provider: " + provider);
-        }
+        return switch (provider.toLowerCase()) {
+            case "stripe" -> stripePaymentProvider;
+            case "razorpay" -> razorPayPaymentProvider;
+            default -> throw new IllegalArgumentException("Unsupported payment provider: " + provider);
+        };
     }
 
 }
